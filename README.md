@@ -25,7 +25,7 @@ Stand-alone version of the Galaxia classification code to classify any given sta
 
 Calling sequence from IDL/GDL:
 ```
-galclassify,input=input,sample=sample
+galclassify,input=input
 ```
 
 **Required input parameters:**	<br/>
