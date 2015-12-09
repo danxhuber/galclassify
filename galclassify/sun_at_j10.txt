@@ -1,0 +1,23 @@
+; input file for galclassify
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Sun_at_J10		; Star ID
+40.0 	10.0		; Galactic longtiude and latitude
+10.00 	0.024		; 2MASS J (mag)
+0.000 	0.000		; 2MASS H (mag)
+0.000 	0.000		; 2MASS K (mag)
+0.00	0.00		; Johnson U (mag)
+0.000	0.00		; Johnson B (mag)
+0.000	0.00		; Johnson V (mag)
+0.000 	0.00		; SDSS g (mag)
+0.000 	0.00		; SDSS r (mag)
+0.000 	0.00		; SDSS i (mag)
+0.00    0.0		; proper motion in RA (mas)
+0.00    0.0		; proper motion in DEC (mas)
+0.0	0.00		; parallax (mas)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+5777.0	100.0		; Effective Temperature
+4.44	0.1		; Surface Gravity
+0.0	0.1		; Metallicity
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+1.0	0.00		; radius of Galaxia simulation (degrees)
+5e4	0.00		; minimum number of models in population

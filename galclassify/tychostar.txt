@@ -1,0 +1,23 @@
+; input file for galclassify
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+TYC-1027-1637-1		; Star ID
+40.0 	10.0		; Galactic longtiude and latitude
+9.842 	0.024		; 2MASS J (mag)
+9.656 	0.022		; 2MASS H (mag)
+9.575 	0.023		; 2MASS K (mag)
+0.00	0.00		; Johnson U (mag)
+11.36	0.07		; Johnson B (mag)
+10.83	0.07		; Johnson V (mag)
+0.000 	0.00		; SDSS g (mag)
+0.000 	0.00		; SDSS r (mag)
+0.000 	0.00		; SDSS i (mag)
+-3.7    1.60		; proper motion in RA (mas)
+12.6    1.50		; proper motion in DEC (mas)
+0.0	0.00		; parallax (mas)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0.0	0.0		; Effective Temperature
+0.0	0.0		; Surface Gravity
+0.0	0.0		; Metallicity
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+1.0	0.00		; radius of Galaxia simulation (degrees)
+1e5	0.00		; minimum number of models in population
