@@ -1,0 +1,3 @@
+catalogs/		; location of the spectroscopic input files
+epics/			; location of the EPIC input files
+output/			; location of the output files

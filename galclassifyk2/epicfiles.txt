@@ -1,0 +1,10 @@
+## CampaignNumber FileName
+1 d1435_02_epic_field1_dmc.mrg
+2 d1497_01_epic_c23_dmc.mrg
+3 d1497_01_epic_c23_dmc.mrg
+4 d14184_01_epic_c245_dmc.mrg
+5 d14184_01_epic_c245_dmc.mrg
+6 d14260_01_epic_c6_dmc.mrg
+7 d14260_03_epic_c7_dmc.mrg
+8 d15042_02_epic_c8_dmc.mrg
+10 d15076_02_epic_c10_dmc.mrg
