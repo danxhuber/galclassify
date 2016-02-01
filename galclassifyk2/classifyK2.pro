@@ -169,16 +169,20 @@ for i=0.,n_elements(loc)-1 do begin
 	r = CGRANDOMINDICES(long(n_elements(sel)),long(h[i]),seed=10)  $
 	else r = findgen(n_elements(sel))
 	if (count eq 0) then ran=ix[sel[r]] else ran=[ran,ix[sel[r]]]
+        ;print,loc[i],h[i],n_elements(r)
+        ;an=''
+        ;read,an
 	count++
 endfor
 mran=model[ran]
 ;save,file=outpath+outfile+'_random.sav',mran
+;stop
 
 ; load and match spectroscopic catalogs
 print,'loading and matching up spectroscopic catalogs ...'
 apogee=mrdfits(pathtocat+'apogee_dr12.fits',1,h,/silent)
 distance=sqrt( (apogee.RA-cra)^2D + (apogee.DEC-cdec)^2D )
-u=where(distance lt 9. and apogee.TEFF gt 0.)
+u=where(distance lt 10. and apogee.TEFF gt 0.)
 if (u[0] ne -1) then begin
 	apogee=apogee[u] 
 	match_apogee=MATCH_2D(data.ra,data.dec,apogee.ra,apogee.dec,range)
@@ -186,7 +190,7 @@ endif else match_apogee=replicate(-1,n_elements(epicc))
 
 rave=mrdfits(pathtocat+'rave_dr4.fits',1,h,/silent)
 distance=sqrt( (rave._RAJ2000-cra)^2D + (rave._DEJ2000-cdec)^2D )
-u=where(distance lt 9. and rave.teffk ne 0. and rave.loggk ne 0.)
+u=where(distance lt 10. and rave.teffk ne 0.)
 if (u[0] ne -1) then begin
 	rave=rave[u] 
 	match_rave=MATCH_2D(data.ra,data.dec,rave._RAJ2000,rave._DEJ2000,range)
@@ -194,7 +198,7 @@ endif else match_rave=replicate(-1,n_elements(epicc))
 
 lamost=mrdfits(pathtocat+'lamost_dr1.fits',1,h,/silent)
 distance=sqrt( (lamost.RA-cra)^2D + (lamost.DEC-cdec)^2D )
-u=where(distance lt 9. and lamost.teff ne 0. and lamost.logg ne 0.)
+u=where(distance lt 10. and lamost.teff ne 0.)
 if (u[0] ne -1) then begin
 	lamost=lamost[u] 
 	match_lamost=MATCH_2D(data.ra,data.dec,lamost.RA,lamost.DEC,range)
@@ -635,13 +639,15 @@ for q=0.,n_elements(epicc)-1 do begin
                           ;DR12
                           teff_in = apogee[match_apogee[q]].TEFF
                           logg_in = apogee[match_apogee[q]].LOGG
-                          feh_in = apogee[match_apogee[q]].FE_H		
+                          feh_in = apogee[match_apogee[q]].FE_H	
+                          ; if apogee doesn't provide metallicity, assume solar
+                          if (feh_in lt -100.) then feh_in=0.0
                           pars[q].stpropflag='apo'
                   endif 
                   if (match_rave[q] ne -1) then begin	
                           teff_in = rave[match_rave[q]].TEFFK
                           logg_in = rave[match_rave[q]].LOGGK
-                          feh_in = 0.0
+                          feh_in = rave[match_rave[q]].C_M_H_K
                           pars[q].stpropflag='rav'
                   endif
                   if (match_lamost[q] ne -1) then begin	

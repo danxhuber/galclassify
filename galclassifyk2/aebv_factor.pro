@@ -72,7 +72,7 @@
 ;-
 
 function aebv_factor,name
-ebf_read,'~/science/models/Galaxia/aebv_factor.ebf','/',schlegel_table
+ebf_read,'aebv_factor.ebf','/',schlegel_table
 ind=where(strupcase(schlegel_table.filter) eq strupcase(name),count)
 if count ne 1 then message,'Filter not found in Schlegel Table: '+name
 return, schlegel_table.aebv_factor[ind[0]]
