@@ -14,6 +14,7 @@
 ;   outpath=outpath 	    ... path for output
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+@loadcolors.pro
 @getpdf.pro
 @addextinction.pro
 @gsmooth.pro
@@ -182,7 +183,7 @@ mran=model[ran]
 print,'loading and matching up spectroscopic catalogs ...'
 apogee=mrdfits(pathtocat+'apogee_dr12.fits',1,h,/silent)
 distance=sqrt( (apogee.RA-cra)^2D + (apogee.DEC-cdec)^2D )
-u=where(distance lt 10. and apogee.TEFF gt 0.)
+u=where(distance lt 9. and apogee.TEFF gt 0.)
 if (u[0] ne -1) then begin
 	apogee=apogee[u] 
 	match_apogee=MATCH_2D(data.ra,data.dec,apogee.ra,apogee.dec,range)
@@ -190,7 +191,7 @@ endif else match_apogee=replicate(-1,n_elements(epicc))
 
 rave=mrdfits(pathtocat+'rave_dr4.fits',1,h,/silent)
 distance=sqrt( (rave._RAJ2000-cra)^2D + (rave._DEJ2000-cdec)^2D )
-u=where(distance lt 10. and rave.teffk ne 0.)
+u=where(distance lt 9. and rave.teffk ne 0.)
 if (u[0] ne -1) then begin
 	rave=rave[u] 
 	match_rave=MATCH_2D(data.ra,data.dec,rave._RAJ2000,rave._DEJ2000,range)
@@ -198,7 +199,7 @@ endif else match_rave=replicate(-1,n_elements(epicc))
 
 lamost=mrdfits(pathtocat+'lamost_dr1.fits',1,h,/silent)
 distance=sqrt( (lamost.RA-cra)^2D + (lamost.DEC-cdec)^2D )
-u=where(distance lt 10. and lamost.teff ne 0.)
+u=where(distance lt 9. and lamost.teff ne 0.)
 if (u[0] ne -1) then begin
 	lamost=lamost[u] 
 	match_lamost=MATCH_2D(data.ra,data.dec,lamost.RA,lamost.DEC,range)
