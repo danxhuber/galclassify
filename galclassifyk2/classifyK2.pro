@@ -14,7 +14,6 @@
 ;   outpath=outpath 	    ... path for output
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-@loadcolors.pro
 @getpdf.pro
 @addextinction.pro
 @gsmooth.pro
@@ -183,7 +182,7 @@ mran=model[ran]
 print,'loading and matching up spectroscopic catalogs ...'
 apogee=mrdfits(pathtocat+'apogee_dr12.fits',1,h,/silent)
 distance=sqrt( (apogee.RA-cra)^2D + (apogee.DEC-cdec)^2D )
-u=where(distance lt 9. and apogee.TEFF gt 0.)
+u=where(distance lt 10. and apogee.TEFF gt 0.)
 if (u[0] ne -1) then begin
 	apogee=apogee[u] 
 	match_apogee=MATCH_2D(data.ra,data.dec,apogee.ra,apogee.dec,range)
@@ -191,7 +190,7 @@ endif else match_apogee=replicate(-1,n_elements(epicc))
 
 rave=mrdfits(pathtocat+'rave_dr4.fits',1,h,/silent)
 distance=sqrt( (rave._RAJ2000-cra)^2D + (rave._DEJ2000-cdec)^2D )
-u=where(distance lt 9. and rave.teffk ne 0.)
+u=where(distance lt 10. and rave.teffk ne 0.)
 if (u[0] ne -1) then begin
 	rave=rave[u] 
 	match_rave=MATCH_2D(data.ra,data.dec,rave._RAJ2000,rave._DEJ2000,range)
@@ -199,7 +198,7 @@ endif else match_rave=replicate(-1,n_elements(epicc))
 
 lamost=mrdfits(pathtocat+'lamost_dr1.fits',1,h,/silent)
 distance=sqrt( (lamost.RA-cra)^2D + (lamost.DEC-cdec)^2D )
-u=where(distance lt 9. and lamost.teff ne 0.)
+u=where(distance lt 10. and lamost.teff ne 0.)
 if (u[0] ne -1) then begin
 	lamost=lamost[u] 
 	match_lamost=MATCH_2D(data.ra,data.dec,lamost.RA,lamost.DEC,range)
@@ -329,7 +328,14 @@ pars = replicate($
 	rhom:0D, rhome1:0D, rhome2:0D, $
 	dism:0D, disme1:0D, disme2:0D, $
 	ebvm:0D, ebvme1:0D, ebvme2:0D, $
-	teffb:0D, loggb:0D, fehb:0D, radb:0D, massb:0D, rhob:0D, disb:0D, ebvb:0D},n_elements(epicc))
+	teffb:0D, teffbe1:0D, teffbe2:0D, $
+	loggb:0D, loggbe1:0D, loggbe2:0D, $
+	fehb:0D, fehbe1:0D, fehbe2:0D, $
+	radb:0D, radbe1:0D, radbe2:0D, $
+	massb:0D, massbe1:0D, massbe2:0D, $
+	rhob:0D, rhobe1:0D, rhobe2:0D, $
+	disb:0D, disbe1:0D, disbe2:0D, $
+	ebvb:0D, ebvbe1:0D, ebvbe2:0D},n_elements(epicc))
 	pars.epic=epicc
 
 ; the Galaxia model has 2-3 groups: an oversampled bright end, and a standard (base) model, 
@@ -596,16 +602,20 @@ for q=0.,n_elements(epicc)-1 do begin
                   getsum,model[uam],p,pars,q,steps,pl=pl,outpath=outpath
 
                   pars[q].dism=dis
-                  pars[q].dise1=dise
-                  pars[q].dise2=dise
+                  pars[q].disme1=dise
+                  pars[q].disme2=dise
                   pars[q].disb=dis
-                  
+                  pars[q].disbe1=dise
+		  pars[q].disbe2=dise
+
                   ; if we don't fit a distance, forget about the reddening constraint
                   if (nodis eq 1) then begin
                      pars[q].ebvm=0.
                      pars[q].ebvme1=0.
                      pars[q].ebvme2=0.
                      pars[q].ebvb=0.
+		     pars[q].ebvbe1=0.
+		     pars[q].ebvbe2=0.
                   endif
     	    	    
 		  ; sample posterior

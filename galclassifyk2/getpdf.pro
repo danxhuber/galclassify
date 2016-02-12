@@ -20,7 +20,7 @@ end
 
 
 ; get mode, medium and confidence interval 
-pro getstat,xax,yax,res,err1,err2,cprob
+pro getstat,xax,yax,res,err1,err2,cprob,bf=bf,st=st
 cprob = total(yax,/cumul)
 yax2=yax
 
@@ -30,6 +30,9 @@ yax2=yax
 
 ; median
 dum = min(abs(cprob-0.5),pos)
+
+if keyword_set(bf) then dum = min(abs(xax-bf),pos)
+
 res=xax[pos]
 
 dum = min(abs(xax-res),pos)
@@ -41,11 +44,13 @@ err1 = xax[pos]-xax[pos5]
 dum = min(abs(cprob-ul),pos6)
 err2 = xax[pos6]-xax[pos]
 yax=yax2
+
 end
 
 
 ; take probabilities and calculate the PDF and CDF
-pro getpdf,xval,pval,res,err1,err2,xax,yax,pl=pl,log=log,no=no,fixed=fixed,leg,truth=truth,samp=samp
+pro getpdf,xval,pval,res,err1,err2,xax,yax,leg,resb,errb1,errb2,$
+pl=pl,log=log,no=no,fixed=fixed,truth=truth,samp=samp,bf=bf
 
 x=xval
 y=pval
@@ -87,7 +92,9 @@ if strmatch(leg,'*dis*') or strmatch(leg,'*rho*') or strmatch(leg,'*Rad*') then 
     x=10.^(x)
     xax=10.^(xax)
 endif    
+
 getstat,xax,yax,res,err1,err2,cprob
+getstat,xax,yax,resb,errb1,errb2,cprob,bf=bf
 
 ; sample the posterior
 ;y2=(y/max(y))*100.
@@ -112,9 +119,15 @@ getstat,xax,yax,res,err1,err2,cprob
 if keyword_set(pl) then begin
 ;	!p.multi=[0,1,2]
 	if keyword_set(log) then plot,xax,cprob,/xlog,title=leg else plot,xax,cprob,title=leg
+	
 	oplot,[res,res],[0,1e10],color=1
 	oplot,[res-err1,res-err1],[0,1e10],color=1,linestyle=2
 	oplot,[res+err2,res+err2],[0,1e10],color=1,linestyle=2
+	
+	;oplot,[resb,resb],[0,1e10],color=2
+	;oplot,[resb-errb1,resb-errb1],[0,1e10],color=2,linestyle=2
+	;oplot,[resb+errb2,resb+errb2],[0,1e10],color=2,linestyle=2
+	
         if keyword_set(truth) then oplot,[truth,truth],[0,1e10],color=2,linestyle=3
 
 	if keyword_set(log) then plot,xax,yax,/xlog,title=leg else $
@@ -123,6 +136,11 @@ if keyword_set(pl) then begin
 	oplot,[res,res],[0,1e10],color=1
 	oplot,[res-err1,res-err1],[0,1e10],color=1,linestyle=2
 	oplot,[res+err2,res+err2],[0,1e10],color=1,linestyle=2
+	
+	;oplot,[resb,resb],[0,1e10],color=2
+	;oplot,[resb-errb1,resb-errb1],[0,1e10],color=2,linestyle=2
+	;oplot,[resb+errb2,resb+errb2],[0,1e10],color=2,linestyle=2
+	
         if keyword_set(truth) then oplot,[truth,truth],[0,1e10],color=2,linestyle=3      
 	;!P.multi=0
 endif
@@ -131,6 +149,11 @@ tmp1=err1
 tmp2=err2
 err1=tmp2
 err2=tmp1
+
+tmp1=errb1
+tmp2=errb2
+errb1=tmp2
+errb2=tmp1
 
 print,leg,res,err1,err2,ostep,step
 
@@ -148,88 +171,120 @@ if keyword_set(pl) then begin
     !p.charsize=1.75
 endif
 
-getpdf,data.teff,p,res,err1,err2,xax,yax,pl=pl,no=steps[0],'Teff'
+getpdf,data.teff,p,res,err1,err2,xax,yax,'Teff',resb,errb1,errb2,$
+pl=pl,no=steps[0],bf=data[bfpos].teff
 pars[q].teffm=res
 pars[q].teffme1=err1
 pars[q].teffme2=err2
 pars[q].teffb=data[bfpos].teff
+pars[q].teffbe1=errb1
+pars[q].teffbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_teff.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.logg,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[1],'log(g)'
+getpdf,data.logg,p,res,err1,err2,xax,yax,'log(g)',resb,errb1,errb2,$
+pl=pl,fixed=steps[1],bf=data[bfpos].logg
 pars[q].loggm=res
 pars[q].loggme1=err1
 pars[q].loggme2=err2
 pars[q].loggb=data[bfpos].logg
+pars[q].loggbe1=errb1
+pars[q].loggbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_logg.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.feh,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[2],'[Fe/H]'
+getpdf,data.feh,p,res,err1,err2,xax,yax,'[Fe/H]',resb,errb1,errb2,$
+pl=pl,fixed=steps[2],bf=data[bfpos].feh
 pars[q].fehm=res
 pars[q].fehme1=err1
 pars[q].fehme2=err2
 pars[q].fehb=data[bfpos].feh
+pars[q].fehbe1=errb1
+pars[q].fehbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_feh.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.rad,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[3],'Rad',/log
+getpdf,data.rad,p,res,err1,err2,xax,yax,'Rad',resb,errb1,errb2,$
+pl=pl,fixed=steps[3],/log,bf=data[bfpos].rad
 pars[q].radm=res
 pars[q].radme1=err1
 pars[q].radme2=err2
 pars[q].radb=data[bfpos].rad
+pars[q].radbe1=errb1
+pars[q].radbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_rad.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.mass,p,res,err1,err2,xax,yax,pl=pl,no=steps[4],'mass'
+getpdf,data.mass,p,res,err1,err2,xax,yax,'mass',resb,errb1,errb2,$
+pl=pl,no=steps[4],bf=data[bfpos].mass
 pars[q].massm=res
 pars[q].massme1=err1
 pars[q].massme2=err2
 pars[q].massb=data[bfpos].mass
+pars[q].massbe1=errb1
+pars[q].massbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_mass.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.rho,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[5],'rho',/log
+getpdf,data.rho,p,res,err1,err2,xax,yax,'rho',resb,errb1,errb2,$
+pl=pl,fixed=steps[5],/log,bf=10.^data[bfpos].rho
 pars[q].rhom=res
 pars[q].rhome1=err1
 pars[q].rhome2=err2
 pars[q].rhob=10.^data[bfpos].rho
+pars[q].rhobe1=errb1
+pars[q].rhobe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_rho.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.dis,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[6],'distance',/log
+getpdf,data.dis,p,res,err1,err2,xax,yax,'distance',resb,errb1,errb2,$
+pl=pl,fixed=steps[6],/log,bf=data[bfpos].dis
 pars[q].dism=res
 pars[q].disme1=err1
 pars[q].disme2=err2
 pars[q].disb=data[bfpos].dis
+pars[q].disbe1=errb1
+pars[q].disbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_dis.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]
     close,1
 endif
 
-getpdf,data.ebv,p,res,err1,err2,xax,yax,pl=pl,fixed=steps[7],'E(B-V)',/log
+getpdf,data.ebv,p,res,err1,err2,xax,yax,'E(B-V)',resb,errb1,errb2,$
+pl=pl,fixed=steps[7],/log,bf=data[bfpos].ebv
 pars[q].ebvm=res
 pars[q].ebvme1=err1
 pars[q].ebvme2=err2
 pars[q].ebvb=data[bfpos].ebv
+pars[q].ebvbe1=errb1
+pars[q].ebvbe2=errb2
+
 if keyword_set(sample) then begin
     openw,1,outpath+strtrim(string(name),2)+'_ebv.txt'
     for i=0.,n_elements(xax)-1 do printf,1,xax[i],yax[i]

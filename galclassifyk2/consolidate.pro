@@ -35,6 +35,19 @@ u=where(pars.teffm ne 0.)
 pars=pars[u]
 
 pars2=pars
+
+; this fixed a bug that existed in classifyk2 after paper acceptance and 
+; prevented distance uncertainties from parallaxes to be adopted
+u=where(strmatch(pars2.stpropflag,'plx'))
+if (u[0] ne -1) then begin
+    for q=0.,n_elements(u)-1 do begin
+    	if (pars2[u[q]].dise1 ne 0. and pars2[u[q]].dise2 ne 0.) then begin
+	    pars2[u[q]].disme1=pars2[u[q]].dise1
+    	    pars2[u[q]].disme2=pars2[u[q]].dise2
+	endif
+    endfor
+endif
+
 pars = replicate($
 	{epic:0L, stpropflag:'', cor:0, $
 	jmag:0D, hmag:0D, kmag:0D, kpmag:0D, $
@@ -99,6 +112,8 @@ if keyword_set(pl) then begin
 
 print,'correcting ',n_elements(u),' stars'
 
+print,pars2[u].epic
+
 for q=0.,n_elements(pars)-1 do begin
 	
 	; first, if the posterior Teff+logg mode are far off the grid, we assume that 
@@ -106,29 +121,29 @@ for q=0.,n_elements(pars)-1 do begin
 	; the best fit value and scale uncertainties according to posteriors
 	if (pos[q] eq -1) then begin
 		pars[q].teff=pars2[q].teffb
-		pars[q].teffe1=pars2[q].teffb*(pars2[q].teffme1/pars2[q].teffm)
-		pars[q].teffe2=pars2[q].teffb*(pars2[q].teffme2/pars2[q].teffm)
+		pars[q].teffe1=pars2[q].teffbe1;pars2[q].teffb*(pars2[q].teffme1/pars2[q].teffm)
+		pars[q].teffe2=pars2[q].teffbe2;pars2[q].teffb*(pars2[q].teffme2/pars2[q].teffm)
 		pars[q].logg=pars2[q].loggb
-		pars[q].logge1=pars2[q].loggme1
-		pars[q].logge2=pars2[q].loggme2
+		pars[q].logge1=pars2[q].loggbe1
+		pars[q].logge2=pars2[q].loggbe2
 		pars[q].feh=pars2[q].fehb
-		pars[q].fehe1=pars2[q].fehme1
-		pars[q].fehe2=pars2[q].fehme2
+		pars[q].fehe1=pars2[q].fehbe1
+		pars[q].fehe2=pars2[q].fehbe2
 		pars[q].rad=pars2[q].radb
-		pars[q].rade1=pars2[q].radb*(pars2[q].radme1/pars2[q].radm)
-		pars[q].rade2=pars2[q].radb*(pars2[q].radme2/pars2[q].radm)
+		pars[q].rade1=pars2[q].radbe1;*(pars2[q].radme1/pars2[q].radm)
+		pars[q].rade2=pars2[q].radbe2;*(pars2[q].radme2/pars2[q].radm)
 		pars[q].mass=pars2[q].massb
-		pars[q].masse1=pars2[q].massb*(pars2[q].massme1/pars2[q].massm)
-		pars[q].masse2=pars2[q].massb*(pars2[q].massme2/pars2[q].massm)
+		pars[q].masse1=pars2[q].massbe1;*(pars2[q].massme1/pars2[q].massm)
+		pars[q].masse2=pars2[q].massbe2;*(pars2[q].massme2/pars2[q].massm)
 		pars[q].rho=pars2[q].rhob
-		pars[q].rhoe1=pars2[q].rhob*(pars2[q].rhome1/pars2[q].rhom)
-		pars[q].rhoe2=pars2[q].rhob*(pars2[q].rhome2/pars2[q].rhom)
+		pars[q].rhoe1=pars2[q].rhobe1;*(pars2[q].rhome1/pars2[q].rhom)
+		pars[q].rhoe2=pars2[q].rhobe2;*(pars2[q].rhome2/pars2[q].rhom)
 		pars[q].dis=pars2[q].disb
-		pars[q].dise1=pars2[q].disb*(pars2[q].disme1/pars2[q].dism)
-		pars[q].dise2=pars2[q].disb*(pars2[q].disme2/pars2[q].dism)
+		pars[q].dise1=pars2[q].disbe1;*(pars2[q].disme1/pars2[q].dism)
+		pars[q].dise2=pars2[q].disbe2;*(pars2[q].disme2/pars2[q].dism)
                 pars[q].ebv=pars2[q].ebvb
-		pars[q].ebve1=pars2[q].ebvme1
-		pars[q].ebve2=pars2[q].ebvme2
+		pars[q].ebve1=pars2[q].ebvbe1
+		pars[q].ebve2=pars2[q].ebvbe2
 	
 	endif else begin
 	; otherwise, adopt posterior median
@@ -173,10 +188,14 @@ endif
 
 
 ; set a floor on uncertainties since they don't include model systematics
+; assuming 1% in Teff + 2% in mass and radius yields 0.02 dex log(g), 6% in density, 
+; and 3% in distance 
+; NB these are not actually rigorous limits on model systematics (which should be 
+; a function of spectral type/ev state), but just broadly avoid crazy small uncertainties
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Teff
-tefflimup=1.0
+tefflimup=10.0
 tefflimlow=0.01
 u=where(pars.teffe1/pars.teff gt tefflimup)
 if (u[0] ne -1) then pars[u].teffe1=pars[u].teff*tefflimup
@@ -202,7 +221,7 @@ u=where(pars.fehe2 lt fehlimlow or pars.fehe2 eq 0.)
 if (u[0] ne -1) then pars[u].fehe2=fehlimlow
 
 ; Mass
-masslimup=1.0
+masslimup=10.0
 masslimlow=0.02
 u=where(pars.masse1/pars.mass gt masslimup)
 if (u[0] ne -1) then pars[u].masse1=pars[u].mass*masslimup
@@ -218,7 +237,7 @@ if (u[0] ne -1) then pars[u].masse2=pars[u].mass*masslimlow
 ; for logg, radius, rho and distance we don't set upper bounds,
 ; since dwarfs can be giants and vice versa
 logglimup=100.0
-logglimlow=0.05
+logglimlow=0.02
 u=where(pars.logge1 gt logglimup)
 if (u[0] ne -1) then pars[u].logge1=logglimup
 u=where(pars.logge2 gt logglimup)
@@ -244,7 +263,7 @@ u=where(pars.rhoe2/pars.rho lt rholimlow or pars.rhoe2 eq 0.)
 if (u[0] ne -1) then pars[u].rhoe2=pars[u].rho*rholimlow
 
 dislimup=100.0
-dislimlow=0.02
+dislimlow=0.03
 u=where(pars.dise1/pars.dis lt dislimlow or pars.dise1 eq 0.)
 if (u[0] ne -1) then pars[u].dise1=pars[u].dis*dislimlow
 u=where(pars.dise2/pars.dis lt dislimlow or pars.dise2 eq 0.)
@@ -258,6 +277,7 @@ u=where(pars.ebv eq 0.)
 pars[u].ebve1 = 0.
 pars[u].ebve2 = 0.
 
+;goto,skip
 ; save the final results
 save,file=outpath+'k2'+name+'_stparas.sav',pars
 
@@ -277,6 +297,7 @@ for q=0.,n_elements(pars)-1 do $
 	pars[q].stpropflag,$
 	format='(I12,A2,I5,A2,I5,A2,I5,A2,d6.3,A2,d6.3,A2,d6.3,A2,d7.3,A2,d6.3,A2,d6.3,A2,d8.3,A2,d8.3,A2,d8.3,A2,d8.3,A2,d8.3,A2,d8.3,A2,e10.3,A2,e10.3,A2,e10.3,A2,e10.3,A2,e10.3,A2,e10.3,A2,d7.4,A2,d7.4,A2,d7.4,A2,A6)'
 close,1
+;skip:
 
 ; do some stats and sanity checks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
