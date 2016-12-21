@@ -377,6 +377,8 @@ if cam eq 5 then u=where(parst.logg ne 0. and strmatch(propid,'*5020*'))
 if cam eq 6 then u=where(parst.logg ne 0. and strmatch(propid,'*6032*'))
 if cam eq 7 then u=where(parst.logg ne 0. and strmatch(propid,'*7032*'))
 if cam eq 8 then u=where(parst.logg ne 0. and strmatch(propid,'*8042*'))
+if cam eq 10 then u=where(parst.logg ne 0. and strmatch(propid,'*10042*'))
+
 if (n_elements(u) gt 2) then oplot,parst[u].teff,parst[u].logg,psym=4,symsize=0.4,color=1
 xyouts,8000,1,'GAP',color=1,charsize=1.5
 
@@ -393,6 +395,8 @@ if cam eq 7 then u=where(parst.logg ne 0. and strmatch(propid,'*7087*'))
 ;; rr lyraes
 ;if cam eq 7 then u=where(parst.logg ne 0. and strmatch(propid,'*7082*'))
 if cam eq 8 then u=where(parst.logg ne 0. and strmatch(propid,'*8056*'))
+if cam eq 10 then u=where(parst.logg ne 0. and strmatch(propid,'*10056*'))
+
 if (n_elements(u) gt 2) then oplot,parst[u].teff,parst[u].logg,psym=4,symsize=0.4,color=2
 xyouts,8000,1,'M dwarfs planets I',color=2,charsize=1.5
 
@@ -407,6 +411,8 @@ if cam eq 5 then u=where(parst.logg ne 0. and strmatch(propid,'*5033*'))
 if cam eq 6 then u=where(parst.logg ne 0. and strmatch(propid,'*6030*'))
 if cam eq 7 then u=where(parst.logg ne 0. and strmatch(propid,'*7030*'))
 if cam eq 8 then u=where(parst.logg ne 0. and strmatch(propid,'*8077*'))
+if cam eq 10 then u=where(parst.logg ne 0. and strmatch(propid,'*10068*'))
+
 if (n_elements(u) gt 2) then oplot,parst[u].teff,parst[u].logg,psym=4,symsize=0.4,color=3
 xyouts,8000,1,'FGK planets',color=3,charsize=1.5
 ;xyouts,8000,1,'Petigura',color=3,charsize=1.5
@@ -422,6 +428,8 @@ if cam eq 5 then u=where(parst.logg ne 0. and strmatch(propid,'*5011*'))
 if cam eq 6 then u=where(parst.logg ne 0. and strmatch(propid,'*6008*'))
 if cam eq 7 then u=where(parst.logg ne 0. and strmatch(propid,'*7008*'))
 if cam eq 8 then u=where(parst.logg ne 0. and strmatch(propid,'*8068*'))
+if cam eq 10 then u=where(parst.logg ne 0. and strmatch(propid,'*10036*'))
+
 if (n_elements(u) gt 2) then oplot,parst[u].teff,parst[u].logg,psym=4,symsize=0.4,color=4
 xyouts,8000,1,'M dwarf / FGK planets II',color=4,charsize=1.5
 !p.multi=0

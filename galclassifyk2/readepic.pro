@@ -9,45 +9,23 @@
 ;   magcut=magcut   	    ... upper magnitude limit 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-pro readepic,pathtoepic=pathtoepic,cam=cam,magcut=magcut
+pro readepic
 
-print,'reading EPIC catalog for campaign:',cam
+file='k2_epic_Sep_2016.csv'
 
-if not keyword_set(magcut) then magcut=30.
-
-name='c'+strtrim(string(cam),2)
-
-; read paths
-readcol,'paths.txt',paths,format='A'
-pathtocat=paths[0]
-pathtoepic=paths[1]
-outpath=paths[2]
-
-readcol,'coords.txt',campaign,raco,deco,format='I,D,D',/silent
-u=where(campaign eq cam)
-centerra = raco[u[0]]
-centerdec = deco[u[0]]
-
-readcol,'epicfiles.txt',campaign,path,format='I,A',/silent
-u=where(campaign eq cam)
-file=pathtoepic+'/'+path[u]
-
-; read paths
-readcol,'paths.txt',paths,format='A'
-pathtocat=paths[0]
-pathtoepic=paths[1]
-outpath=paths[2]
-
-n=0.
+n=long(0)
 s=''
 openr,1,file
+readf,1,s
 while not eof(1) do begin
 	readf,1,s
-	t=strsplit(s,'|',/extract,/preserve_null)
-	kepmag=double(t[45])
-	ra=double(t[9])
-	if (abs(ra-centerra) gt 10.) then continue
-	if (kepmag le magcut) then n++ 
+	;t=strsplit(s,'|',/extract,/preserve_null)
+	;kepmag=double(t[45])
+	;ra=double(t[9])
+	;stop
+	;if (abs(ra-centerra) gt 10.) then continue
+	;if (kepmag le magcut) then 
+	n++ 
 endwhile
 close,1
 
@@ -64,8 +42,9 @@ bmag:0D,vmag:0D,bmage:0D,vmage:0D,jmag:0D,hmag:0D,kmag:0D,jmage:0D,hmage:0D,kmag
 gmag:0D,gmage:0D,rmag:0D,rmage:0D,imag:0D,image:0D,$
 kepmag:0D,pmra:0D,pmrae:0D,pmde:0D,pmdee:0D,pmt:0D,pmte:0D,ra:0D,dec:0D,plx:0D,plxe:0D},n)
 
-i=0.
+i=long(0)
 openr,1,file
+readf,1,s
 while not eof(1) do begin
 	readf,1,s
 	t=strsplit(s,'|',/extract,/preserve_null)
@@ -73,15 +52,15 @@ while not eof(1) do begin
 
 	kepmag=double(t[45])
 	ra=double(t[9])
-	if (kepmag gt magcut) then continue
-	if (abs(ra-centerra) gt 10.) then continue
+	;if (kepmag gt magcut) then continue
+	;if (abs(ra-centerra) gt 10.) then continue
 
 	data[i].hip = byte(t[1])
 	data[i].tyco = byte(t[2])
 	data[i].ucac = byte(t[3])
 	data[i].mass = byte(t[4])
 	data[i].sdss = byte(t[5])
-	if (n_elements(t) gt 63) then data[i].nomad = byte(t[63])
+	;if (n_elements(t) gt 63) then data[i].nomad = byte(t[63])
 
 	data[i].obj = byte(t[6])
 	data[i].kepflag = byte(t[7])
@@ -111,7 +90,7 @@ while not eof(1) do begin
 	data[i].pmdee=double(t[14])
 	data[i].plx=double(t[15])
 	data[i].plxe=double(t[16])
-	
+	;stop
 	i++
 endwhile
 close,1
@@ -123,7 +102,8 @@ data.pmte = sqrt( (x^(-0.5D)*data.pmde*data.pmdee)^2D + (x^(-0.5D)*data.pmra*dat
 u=where(data.pmt eq 0.)
 data[u].pmte=0.
 
-ebf_write,pathtoepic+name+'epic.ebf','/data',data
+stop
+ebf_write,'epic.ebf','/data',data
 
 ;save,file=pathtoepic+name+'epic.sav',data
 

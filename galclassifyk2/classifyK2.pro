@@ -95,8 +95,8 @@ name='c'+strtrim(string(cam),2);+'_'+strtrim(string(maglim[0],format='(f6.1)'),2
 	;+strtrim(string(maglim[1],format='(f6.1)'),2)
 outfile='k2'+name
 
-print,'loading EPIC: ',pathtoepic+'c'+strtrim(string(cam),2)+'epic.ebf'
-ebf_read,pathtoepic+'c'+strtrim(string(cam),2)+'epic.ebf','/data',data
+print,'loading EPIC: ',pathtoepic+'epic.ebf'
+ebf_read,pathtoepic+'epic.ebf','/data',data
 
 print,'loading Galaxia model: ','galaxia/'+name+'_model.ebf'
 ebf_read,'galaxia/'+name+'_model.ebf','/model',model
@@ -204,7 +204,7 @@ if (u[0] ne -1) then begin
 	match_lamost=MATCH_2D(data.ra,data.dec,lamost.RA,lamost.DEC,range)
 endif else match_lamost=replicate(-1,n_elements(epicc))
 
-
+restore,pathtocat+'tgas.idl'
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -452,6 +452,16 @@ for q=0.,n_elements(epicc)-1 do begin
           if (data[q].jmag ne 0. and data[q].jmag lt magcut) then samp='bright'
           if (data[q].jmag eq 0. and data[q].vmag lt magcut) then samp='bright'
           if (faintcut gt 0. and data[q].jmag gt faintcut) then samp='faint'
+
+
+    	  ;check TGAS
+	  utgas = where(epicc[q] eq tgas.epic)
+	  if (utgas[0] ne -1) then begin
+	    data[q].plx = tgas[utgas].parallax
+	    data[q].plxe= tgas[utgas].parallax_error
+	    print,'TGAS plx:',data[q].plx,data[q].plxe,format='(A5,d10.5,d10.5)'
+	    
+	  endif ;else continue
 
           ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           ;  best case: parallax is available

@@ -26,11 +26,11 @@ endif
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; classify targets
-classifyK2,cam=cam;,/pl,/verbose;,epicin=212763021,/pl;,/verbose,/sample
+classifyK2,cam=cam,/pl,/verbose;,epicin=212763021,/pl;,/verbose,/sample
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; consolidate the output of classifyK2
-;consolidate,cam=cam,outpath=outpath,/pl
+consolidate,cam=cam,/pl;,outpath=outpath,/pl
 
 stop
 

@@ -25,7 +25,9 @@ endif
 magoff=0.5
 
 ; subsampling fraction for model below faintcut
-subsamp=0.2
+
+subsamp=0.2 ; this was the default used for the paper
+;subsamp=0.05	; for C11 (galactic center)
 
 ; adjust oversampling so we have at least this many stars in the brightest mag bin
 nt=5000.
