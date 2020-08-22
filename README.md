@@ -23,7 +23,7 @@ Code used to classify stellar sources targeted by the K2 mission for the Eclipti
 galclassifyk2 uses databases which need be generated/downloaded before classifications can be done. Assuming you're starting from scratch, the procedure is as follows:
 
 1) Download and unzip astrometric and spectroscopic input catalogs (LAMOST DR1, APOGEE DR12, RAVE DR4, TGAS) here:
-https://www.dropbox.com/sh/wbisca484fvemuq/AAChIyTDhfirZOW07J4peNOaa?dl=0
+https://drive.google.com/drive/folders/15FWKqCen2z1qwSuEAgZQVViKbav-WbUE?usp=sharing
 and place them in the catalogs/ directory. 
 
 2) Download and unzip an EPIC from MAST:
@@ -40,7 +40,7 @@ This will create the file epics/epic.ebf.
 
 
 4) Download and unzip the Galaxia synthetic population for a given campaign here:
-https://www.dropbox.com/sh/9dwfnexjm08h39p/AABAMZjAfcPQZ4InB_Otdh8Ya?dl=0
+https://drive.google.com/drive/folders/13Hniwt-hqa_ehKINIwOiiw76K-npCbpH?usp=sharing
 and place it in the galaxia/ directory. 
 
 Now everything should be ready to run classifications. 
